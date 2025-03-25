@@ -46,8 +46,8 @@ class kalman_filter():
     
     def initialize_KF(self, noise_std_GPS, noise_std_ACCEL):
         # IMPORTANT: Assume the state vectors in the order: X = [x, v_x, a_x, y, v_y, a_y, z, v_z, a_z], Shape: (n_states,1)
-        # n_states = 9
-        # n_measurements = 3
+        n_states = 9
+        n_measurements = 3
 
         # Function to initialize the following as 2D numpy arrays:
         #   self.X_opt: Optimal state vector (n_states x 1) 
@@ -61,14 +61,25 @@ class kalman_filter():
         #   noise_std_ACCEL: Standard deviation of Accelerometer noise
         # YOUR CODE HERE
         # -----------------------------------
-        # self.X_opt = ...
-        # self.P_opt = ...
+        #####
+        #####
 
-        # self.H_GPS = ...
-        # self.H_ACCEL = ...
 
-        # self.R_GPS = ...
-        # self.R_ACCEL = ...
+
+        self.X_opt = np.random.rand(n_states,1)
+        self.P_opt = 1e6* np.diag(np.ones(n_states))
+        indices_gps = [0,3,6]
+        indices_imu = [2,5,8]
+        self.H_GPS = np.eye(n_states)[indices_gps] #cooler way to say, select the first row as the first rw of a 9x9 identity matrix
+        self.H_ACCEL = np.eye(n_states)[indices_imu]
+
+        self.R_GPS = np.eye(n_states)*(noise_std_GPS**2)
+        self.R_ACCEL = np.eye(n_states)*(noise_std_ACCEL**2)
+
+
+
+        #####
+        #####
 
         # SAMPLE SOLUTION
 
@@ -103,10 +114,11 @@ class kalman_filter():
         # YOUR CODE HERE
         # -----------------------------------
 
-        # A_trans = ...
+        A_trans = np.array([[1,dt,0.5*dt**2],[0,1,dt],[0,0,1]])
 
-        # X_pred = ...
-        # P_pred = ...
+        X_pred = A_trans @ self.X_opt
+        P_pred = A_trans @ self.P_opt @ A_trans.T + Q_trans
+
 
         # SAMPLE SOLUTION
 
